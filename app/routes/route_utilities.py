@@ -41,8 +41,8 @@ def create_item(cls):
     try:
         new_item = cls.from_dict(request_body)
         
-    except KeyError as error:
-        response = {"message": f"Invalid request: missing {error.args[0]}"}
+    except KeyError:
+        response = {"details": "Invalid data"}
         abort(make_response(response, 400))
     
     db.session.add(new_item)
@@ -52,14 +52,12 @@ def create_item(cls):
 
 def get_all_items(cls):
     query = db.select(cls)
-    #can i move this to a helper function? its getting long as heckums
+    
     title_param = request.args.get('title')
     if title_param:
         query = query.where(cls.title.ilike(f"{title_param}%"))
     
-    
     sort_param = request.args.get('sort', 'asc')
-    
     
     if sort_param == "desc":
         query = query.order_by(cls.title.desc())
@@ -78,15 +76,16 @@ def get_one_item(cls, id):
     
     return item.to_dict()
 
-def update_entire_item(cls, id):
+def update_entire_item(cls, id, goal_update=False):
     item = validate_model(cls, id)
     request_body = request.get_json()
     
     item.title = request_body["title"]
-    item.description = request_body["description"]
+    if not goal_update:
+        item.description = request_body["description"]
     db.session.commit()
     
-    return Response(status=204, mimetype="application/json")
+    return item
 
 
 def update_partial_item(cls, id):

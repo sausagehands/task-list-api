@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 
 class Goal(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    title: Mapped[Optional[str]]
+    title: Mapped[str]
     tasks: Mapped[list["Task"]] = relationship(back_populates="goal")
 
     def to_dict(self):
@@ -20,6 +20,6 @@ class Goal(db.Model):
     
     @classmethod
     def from_dict(cls, task_data):
-        new_task =  cls(title=task_data.get('title'))
+        new_task =  cls(title=task_data['title'])
         
         return new_task

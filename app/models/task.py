@@ -26,14 +26,13 @@ class Task(db.Model):
         task_as_dict["description"]= self.description
         task_as_dict["is_complete"]= self.completed_at is not None
         
-        #did i jank this up?
+        if self.goal_id:
+            task_as_dict["goal_id"] = self.goal_id
+            
         if self.completed_at:
             task_as_dict["completed_at"]= self.completed_at.isoformat()
         else:
             None
-        
-        if self.goal:
-            task_as_dict["goal"] = self.goal.title
         
         return task_as_dict
     
