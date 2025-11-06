@@ -1,10 +1,10 @@
-from app import create_app
+from app import create_app, db
 from app.models.task import Task
 from app.models.goal import Goal
-from app.db import db
 from datetime import datetime
 from dotenv import load_dotenv
 
+load_dotenv()
 app = create_app()
 
 with app.app_context():
