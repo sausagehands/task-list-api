@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint
 from app.models.task import Task
 from .route_utilities import *
 
@@ -8,7 +8,6 @@ bp = Blueprint("tasks_bp", __name__, url_prefix="/tasks")
 @bp.post("", strict_slashes = False)
 def create_task():
     return create_item(Task)
-
 
 @bp.get("", strict_slashes = False)
 def get_all_tasks():

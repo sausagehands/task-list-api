@@ -1,4 +1,4 @@
-from flask import Blueprint, abort, make_response, request, jsonify
+from flask import Blueprint, request
 from app.models.goal import Goal
 from app.models.task import Task
 
@@ -7,8 +7,7 @@ from .route_utilities import *
 bp = Blueprint("goals_bp", __name__, url_prefix="/goals")
 
 def associate_tasks_with_goal(goal, task_ids):
-    '''clear old associations-- this seems kind of dumb, what if i'm trying to append more tasks?
-    can you append to an endpoint like that? would it be a patch? an update?'''
+    
     for task in goal.tasks:
         task.goal_id = None
     
@@ -26,10 +25,7 @@ def associate_tasks_with_goal(goal, task_ids):
 
 def create_new_task_for_goal(goal, task_data):
     task_data["goal_id"] = goal.id
-    
-    '''if i remove request_body from create_item helper function, i can technically reuse it here?
-    but then i have to refactor everything again... ugggh-- i'd also have to remove its return
-    statement since that one has 201 & this one 200'''
+
     new_task = Task.from_dict(task_data)
     db.session.add(new_task)
     db.session.commit
@@ -74,8 +70,7 @@ def get_one_goal(goal_id):
 @bp.put("/<goal_id>", strict_slashes = False)
 def update_entire_goal(goal_id):
     updated_goal = update_entire_item(Goal, goal_id, goal_update=True)
-    return jsonify(updated_goal.to_dict()), 200
-
+    return updated_goal.to_dict(), 200
 
 @bp.patch("/<goal_id>", strict_slashes = False)
 def update_partial_goal(goal_id):

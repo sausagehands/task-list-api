@@ -34,7 +34,10 @@ def send_slack_notification(item_title):
             )
         except Exception as e:
             print(f"Slack notification failed: {e}")
-            
+
+
+'''none of these probably go here, but it seemed easier at the time...
+& while my code is solid, my brain is delicate & easy to break.'''           
 def create_item(cls):
     request_body = request.get_json()
     
@@ -86,7 +89,6 @@ def update_entire_item(cls, id, goal_update=False):
     db.session.commit()
     
     return item
-
 
 def update_partial_item(cls, id):
     item = validate_model(cls, id)
