@@ -1,50 +1,43 @@
 from flask import Blueprint, abort, make_response, request, Response
 from app.models.task import Task
-from ..db import db
-
-tasks_bp = Blueprint("tasks_bp", __name__, url_prefix="/tasks")
+from .route_utilities import *
 
 
-@tasks_bp.get("/<task_id>")
-def get_one_task(task_id):
-    task = validate_task(task_id)
-    
-    return task.to_dict()
+bp = Blueprint("tasks_bp", __name__, url_prefix="/tasks")
 
-
-def validate_task(task_id):
-    try:
-        task_id = int(task_id)
-    except: 
-        response = {"message": f"task {task_id} invalid"}
-        abort(make_response(response , 400))
-    
-    query = db.select(Task).where(Task.id == task_id)
-    task = db.session.scalar(query)
-    
-    if not task: #for database, use <if not> because scalar(query) returns None
-        response = {"message": f"task {task_id} not found"}
-        abort(make_response(response, 404))
-    
-    return task
-
-@tasks_bp.get("", strict_slashes = False)
-def get_all_tasks():
-    query = db.select(Task)
-    
-    title_param = request.args.get('title')
-    
-
-@tasks_bp.post("", strict_slashes = False)
+@bp.post("", strict_slashes = False)
 def create_task():
-    request_body = request.get_json()
-    
-    new_task = Task.from_dict(request_body)
-    
-    db.session.add(new_task)
-    db.session.commit()
-    
-    return new_task.to_dict(), 201
+    return create_item(Task)
 
-@tasks_bp.put("", strict_slashes = False)
-def update_task
+@bp.get("", strict_slashes = False)
+def get_all_tasks():
+    return get_all_items(Task)
+
+@bp.get("/<task_id>")
+def get_one_task(task_id):
+    return get_one_item(Task, task_id)
+
+@bp.put("/<task_id>", strict_slashes = False)
+def update_entire_task(task_id):
+    return update_entire_item(Task, task_id)
+
+@bp.patch("/<task_id>", strict_slashes = False)
+def update_partial_task(task_id):
+    return update_partial_item(Task, task_id)
+    
+@bp.patch("/<task_id>/mark_complete", strict_slashes = False)
+def mark_complete(task_id):
+    return mark_item_complete(Task, task_id)
+
+@bp.patch("/<task_id>/mark_incomplete", strict_slashes = False)
+def mark_incomplete(task_id):
+    return mark_item_incomplete(Task, task_id)
+
+@bp.delete("/<task_id>", strict_slashes = False)
+def delete_task(task_id):
+    return delete_item(Task, task_id)
+
+
+    
+    
+    

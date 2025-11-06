@@ -14,20 +14,25 @@ class Task(db.Model):
     
     #converts task instance into dictionary
     def to_dict(self):
-        return{
-            "id": self.id,
-            "title": self.title,
-            "description": self.description,
-            "is_complete": self.completed_at is not None,
-            "completed_at": self.completed_at.isoformat() if self.completed_at else None 
-        }
+        task_as_dict = {}
+        task_as_dict["id"]= self.id
+        task_as_dict["title"]= self.title
+        task_as_dict["description"]= self.description
+        task_as_dict["is_complete"]= self.completed_at is not None
+        
+        if self.completed_at:
+            task_as_dict["completed_at"]= self.completed_at.isoformat() if self.completed_at else None 
+        
+        return task_as_dict
     
     #creates a task from a dictionary
     @classmethod
     def from_dict(cls, task_data):
-        return cls(
-            title=task_data.get('title'),
-            description=task_data.get('description'),
+        new_task =  cls(
+            title=task_data['title'],
+            description=task_data['description'],
             completed_at=task_data.get('completed_at')
             )
+        
+        return new_task
         
