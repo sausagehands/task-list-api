@@ -34,7 +34,7 @@ def create_new_task_for_goal(goal, task_data):
 
 @bp.post("", strict_slashes = False)
 def create_goal():
-    return create_item(Goal)
+    return create_model(Goal, request.get_json())
 
 @bp.post("/<goal_id>/tasks", strict_slashes = False)
 def create_task_with_goal(goal_id):

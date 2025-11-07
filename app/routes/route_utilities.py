@@ -5,20 +5,42 @@ import os
 import requests
 
 def validate_model(cls, id):
+    """
+    Validates and retrieves a model instance by ID.
+    Returns the model instance if found.
+    Aborts with 400 if ID is invalid.
+    Aborts with 404 if model not found.
+    """
     try:
         id = int(id)
-    except: 
-        response = {"message": f"{cls.__name__} {id} invalid"}
-        abort(make_response(response , 400))
+    except ValueError:
+        response = {"message": f"{cls.__name__} id {id} is invalid"}
+        abort(make_response(response, 400))
     
     query = db.select(cls).where(cls.id == id)
     item = db.session.scalar(query)
     
-    if not item: #for database, use <if not> because scalar(query) returns None
+    if not item:
         response = {"message": f"{cls.__name__} {id} not found"}
         abort(make_response(response, 404))
     
     return item
+
+# def create_model(cls, request_body):
+#     """
+#     Creates a new model instance from request body.
+#     Returns tuple: (model.to_dict(), 201)
+#     Aborts with 400 if required fields missing.
+#     """
+#     try:
+#         new_instance = cls.from_dict(request_body)
+#     except KeyError:
+#         abort(make_response({"details": "Invalid data"}, 400))
+    
+#     db.session.add(new_instance)
+#     db.session.commit()
+    
+#     return new_instance.to_dict(), 201
 
 def send_slack_notification(item_title):
     slack_token = os.environ.get("SLACK_TOKEN")
@@ -38,8 +60,8 @@ def send_slack_notification(item_title):
 
 '''none of these probably go here, but it seemed easier at the time...
 & while my code is solid, my brain is delicate & easy to break.'''           
-def create_item(cls):
-    request_body = request.get_json()
+def create_model(cls, request_body):
+    #request_body = request.get_json()
     
     try:
         new_item = cls.from_dict(request_body)

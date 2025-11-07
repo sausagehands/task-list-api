@@ -7,7 +7,7 @@ bp = Blueprint("tasks_bp", __name__, url_prefix="/tasks")
 
 @bp.post("", strict_slashes = False)
 def create_task():
-    return create_item(Task)
+    return create_model(Task, request.get_json())
 
 @bp.get("", strict_slashes = False)
 def get_all_tasks():
